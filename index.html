@@ -517,7 +517,6 @@
             zones.forEach((z, zi) => { const it = CHECKS.filter(c => c.zone === z); const n = it.filter(c => (S.res[c.ref] || {}).v).length; $("zc" + zi).textContent = n + "/" + it.length });
             $("bar").style.width = (100 * done / CHECKS.length) + "%";
             $("prog").textContent = done + " of " + CHECKS.length + " checks answered";
-            if (v === "Fail") { el.closest("details").open = true;}
         }
         function q(v) { 
             let s = String(v == null ? "" : v).replace(/[\r\n]+/g, " "); 
