@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1f3864">
+    <title>IA Northern Tower Site Audit Form</title>
+    <style>
+        :root {
+            --bg: #f4f6fa;
+            --card: #fff;
+            --tx: #1b1f29;
+            --mut: #5b6475;
+            --bd: #d5dae3;
+            --pri: #1f3864;
+            --pass: #2e7d32;
+            --fail: #c62828;
+            --na: #6b7280;
+            --crit: #c62828;
+            --zone: #d9e2f3
+        }
+
+        @media (prefers-color-scheme:dark) {
+            :root {
+                --bg: #12151c;
+                --card: #1c212c;
+                --tx: #e8ebf2;
+                --mut: #9aa3b5;
+                --bd: #333b4d;
+                --pri: #7fa3e6;
+                --zone: #243251
+            }
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--bg);
+            color: var(--tx);
+            font-size: 15px;
+            padding-bottom: 80px
+        }
+
+        header {
+            background: var(--pri);
+            color: #fff;
+            padding: 12px 14px;
+            position: sticky;
+            top: 0;
+            z-index: 5
+        }
+
+        @media (prefers-color-scheme:dark) {
+            header {
+                color: #0b0f18
+            }
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 17px
+        }
+
+        .bar {
+            height: 6px;
+            background: rgba(255, 255, 255, .3);
+            border-radius: 3px;
+            margin-top: 6px
+        }
+
+        .bar i {
+            display: block;
+            height: 100%;
+            background: #8bd18b;
+            border-radius: 3px;
+            width: 0
+        }
+
+        #prog {
+            font-size: 12px;
+            margin-top: 3px
+        }
+
+        .tabs {
+            display: flex;
+            gap: 6px;
+            padding: 10px 12px 0
+        }
+
+        .tabs button {
+            flex: 1;
+            padding: 9px;
+            border: 1px solid var(--bd);
+            background: var(--card);
+            color: var(--tx);
+            border-radius: 8px 8px 0 0;
+            font-size: 14px;
+            cursor: pointer
+        }
+
+        .tabs button.on {
+            background: var(--pri);
+            color: #fff;
+            border-color: var(--pri)
+        }
+
+        @media (prefers-color-scheme:dark) {
+            .tabs button.on {
+                color: #0b0f18
+            }
+        }
+
+        main {
+            padding: 12px;
+            max-width: 760px;
+            margin: 0 auto
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--bd);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            color: var(--mut);
+            margin: 8px 0 3px
+        }
+
+        input[type=text],
+        input[type=date] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--bd);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--tx);
+            font-size: 15px
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--bd);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--tx);
+            font-size: 15px;
+        }
+
+        .row2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px
+        }
+
+        details {
+            margin-bottom: 10px
+        }
+
+        summary {
+            background: var(--zone);
+            padding: 11px 12px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between
+        }
+
+        summary span {
+            font-weight: normal;
+            font-size: 12px;
+            color: var(--mut)
+        }
+
+        .chk {
+            background: var(--card);
+            border: 1px solid var(--bd);
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 8px
+        }
+
+        .chk.fail {
+            border-color: var(--fail);
+            border-width: 2px
+        }
+
+        .ct {
+            font-size: 14px;
+            line-height: 1.35
+        }
+
+        .rk {
+            font-size: 11px;
+            color: var(--mut);
+            margin: 3px 0 7px
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--crit);
+            color: #fff;
+            font-size: 10px;
+            padding: 1px 6px;
+            border-radius: 8px;
+            margin-left: 6px;
+            vertical-align: middle
+        }
+
+        .seg {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px
+        }
+
+        .seg button {
+            padding: 11px 0;
+            border: 1px solid var(--bd);
+            background: var(--bg);
+            color: var(--tx);
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer
+        }
+
+        .seg button.on.Pass {
+            background: var(--pass);
+            color: #fff;
+            border-color: var(--pass)
+        }
+
+        .seg button.on.Fail {
+            background: var(--fail);
+            color: #fff;
+            border-color: var(--fail)
+        }
+
+        .seg button.on.NA {
+            background: var(--na);
+            color: #fff;
+            border-color: var(--na)
+        }
+
+        .notes {
+            margin-top: 7px
+        }
+
+        .notes input {
+            padding: 8px;
+            font-size: 13px
+        }
+
+        .act {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card);
+            border-top: 1px solid var(--bd);
+            padding: 10px;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            z-index: 6
+        }
+
+        .act button,
+        .btn {
+            padding: 12px 16px;
+            border: 0;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            background: var(--pri);
+            color: #fff
+        }
+
+        @media (prefers-color-scheme:dark) {
+
+            .act button,
+            .btn {
+                color: #0b0f18
+            }
+        }
+
+        .act button.sec,
+        .btn.sec {
+            background: var(--bg);
+            color: var(--tx);
+            border: 1px solid var(--bd)
+        }
+
+        .note {
+            font-size: 12px;
+            color: var(--mut);
+            line-height: 1.5
+        }
+
+        #msg {
+            font-size: 13px;
+            margin-top: 8px
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 60px;
+            padding: 10px;
+            border: 1px solid var(--bd);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--tx);
+            font-size: 14px;
+            font-family: inherit
+        }
+
+        ul {
+            padding-left: 18px;
+            margin: 6px 0
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>IA Northern Tower Site Audit Form</h1>
+        <div class="bar"><i id="bar"></i></div>
+        <div id="prog"></div>
+    </header>
+    <main>
+        <section id="p1">
+            <div class="card">
+                <div class="row2">
+                    <div>
+                        <label>Site ID and Name</label>
+                        <select id="siteId"></select>
+                    </div>
+                    <!-- <div><label>Site name *</label><input type="text" id="siteName"></div> -->
+                    <div><label>Auditor(s)</label>
+                        <select id="auditor">
+                            <option value="Lupita Blanco">Lupita Blanco</option>
+                            <option value="Amaury Samos">Amaury Samos</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row2">
+                    <div>
+                        <label>Region</label><input type="text" id="region" value="Northern">
+                    </div>
+                    <div>
+                        <label>Visit date</label><input type="date" id="vdate">
+                    </div>
+                </div>
+                <datalist id="sites"></datalist>
+                <p class="note">Do not climb the tower. Use ground-level inspection, binoculars or drone photos and
+                    follow PPE requirements. Tap Pass, Fail or N/A for each check. For every Fail, add a photo reference
+                    and a short comment. Progress saves automatically on this device.</p>
+            </div>
+            <div id="zones"></div>
+            <div class="card">
+                <label>Overall notes for this site</label>
+                <textarea id="overall"></textarea>
+            </div>
+        </section>
+    </main>
+    <div class="act" id="act1">
+        <button class="sec" onclick="newSite()">New site</button>
+        <button
+            onclick="exportCsv()">Export site file</button>
+    </div>
+    <div style="text-align:center;font-size:13px;padding:0 12px" id="msg"></div>
+    <script>
+        const CHECKS = [{ "zone": "A. Access road and perimeter", "ref": "A1", "text": "Access road passable year-round, no washouts", "risk": "Delayed repair and outage", "crit": false }, { "zone": "A. Access road and perimeter", "ref": "A2", "text": "Fence intact: no holes, damage or climbing points", "risk": "Security, theft", "crit": false }, { "zone": "A. Access road and perimeter", "ref": "A3", "text": "Gate lock in place and working, with signage", "risk": "Unauthorized access", "crit": false }, { "zone": "A. Access road and perimeter", "ref": "A4", "text": "Vegetation cut inside and outside fence, clear of tower base and shelter", "risk": "Fire, access, damage", "crit": false }, { "zone": "A. Access road and perimeter", "ref": "A5", "text": "Drainage clear: no erosion or standing water near base or shelter", "risk": "Structural and foundation damage", "crit": false }, { "zone": "A. Access road and perimeter", "ref": "A6", "text": "Signage: danger, owner, emergency contact", "risk": "Safety and compliance", "crit": false }, { "zone": "B. Tower structure", "ref": "B1", "text": "Paint and corrosion condition", "risk": "Structural integrity", "crit": false }, { "zone": "B. Tower structure", "ref": "B2", "text": "Missing or loose bolts, bent members, guy wires and anchors", "risk": "Collapse risk", "crit": true }, { "zone": "B. Tower structure", "ref": "B3", "text": "Aviation light working", "risk": "Aviation compliance and fines", "crit": true }, { "zone": "B. Tower structure", "ref": "B4", "text": "Lifeline and climbing safety system present and inspected", "risk": "Staff safety", "crit": true }, { "zone": "B. Tower structure", "ref": "B5", "text": "Anti-climb guard and ladder access controls", "risk": "Unauthorized climbing", "crit": false }, { "zone": "B. Tower structure", "ref": "B6", "text": "Antennas, dishes, rails: condition, orientation, idle or unrecovered equipment", "risk": "Asset loss and revenue", "crit": false }, { "zone": "B. Tower structure", "ref": "B7", "text": "Cable trays, feeders and fiber tidy, no hanging cables", "risk": "Service quality and safety", "crit": false }, { "zone": "C. Shelter/cabinet exterior and roof", "ref": "C1", "text": "Roof leaks, cracks, water stains", "risk": "Equipment damage", "crit": false }, { "zone": "C. Shelter/cabinet exterior and roof", "ref": "C2", "text": "Walls, door and locks in good condition", "risk": "Security", "crit": false }, { "zone": "C. Shelter/cabinet exterior and roof", "ref": "C3", "text": "Air conditioner/ventilation working, condensation drains clear", "risk": "Overheating", "crit": false }, { "zone": "C. Shelter/cabinet exterior and roof", "ref": "C4", "text": "Cable entry points sealed against water and pests", "risk": "Equipment damage", "crit": false }, { "zone": "D. Shelter/equipment room interior", "ref": "D1", "text": "Cleanliness: dust, insects, rodents", "risk": "Equipment failure", "crit": false }, { "zone": "D. Shelter/equipment room interior", "ref": "D2", "text": "Temperature within limits, cooling working", "risk": "Equipment failure", "crit": false }, { "zone": "D. Shelter/equipment room interior", "ref": "D3", "text": "Cable organization and labeling", "risk": "Fault finding and safety", "crit": false }, { "zone": "D. Shelter/equipment room interior", "ref": "D4", "text": "Equipment on site matches asset register (switches, radios, routers, repeaters)", "risk": "Asset accountability", "crit": false }, { "zone": "D. Shelter/equipment room interior", "ref": "D5", "text": "Equipment with no asset record, or idle equipment", "risk": "Unrecorded or unused assets", "crit": false }, { "zone": "D. Shelter/equipment room interior", "ref": "D6", "text": "Fire extinguisher present and within service date", "risk": "Fire safety", "crit": true }, { "zone": "D. Shelter/equipment room interior", "ref": "D7", "text": "Smoke or heat detector working", "risk": "Fire", "crit": true }, { "zone": "D. Shelter/equipment room interior", "ref": "D8", "text": "Emergency lighting, first aid kit, housekeeping", "risk": "Safety", "crit": false }, { "zone": "E. Power systems", "ref": "E1", "text": "Battery bank: install date, swelling, leaks, corrosion, old batteries in use", "risk": "Outage and fire", "crit": true }, { "zone": "E. Power systems", "ref": "E2", "text": "Rectifier and BBU working; runtime test result if available", "risk": "Service continuity", "crit": false }, { "zone": "E. Power systems", "ref": "E3", "text": "Generator: condition, fuel level, last service date, test run", "risk": "Service continuity", "crit": false }, { "zone": "E. Power systems", "ref": "E4", "text": "Fuel storage secure, no leaks; consumption vs logs", "risk": "Fuel theft and spillage", "crit": false }, { "zone": "E. Power systems", "ref": "E5", "text": "Commercial power connection, meter and breaker condition", "risk": "Reliability", "crit": false }, { "zone": "E. Power systems", "ref": "E6", "text": "Solar or other backup if installed", "risk": "Continuity", "crit": false }, { "zone": "F. Grounding and lightning protection", "ref": "F1", "text": "Ground bars connected, no cut or stolen copper", "risk": "Equipment damage, safety", "crit": true }, { "zone": "F. Grounding and lightning protection", "ref": "F2", "text": "Surge protectors present", "risk": "Lightning damage", "crit": false }, { "zone": "F. Grounding and lightning protection", "ref": "F3", "text": "Last grounding resistance test date and result", "risk": "Compliance", "crit": true }, { "zone": "G. Security, alarm and CCTV", "ref": "G1", "text": "Intrusion/door alarm installed and working (test with technician)", "risk": "Theft", "crit": true }, { "zone": "G. Security, alarm and CCTV", "ref": "G2", "text": "Alarms reach the NOC; response time", "risk": "Delayed response", "crit": false }, { "zone": "G. Security, alarm and CCTV", "ref": "G3", "text": "CCTV: cameras working, field of view, recording, retention", "risk": "Evidence for theft and incidents", "crit": false }, { "zone": "G. Security, alarm and CCTV", "ref": "G4", "text": "Lighting around the site", "risk": "Security", "crit": false }, { "zone": "G. Security, alarm and CCTV", "ref": "G5", "text": "Guard presence if applicable; guard log", "risk": "Access control", "crit": false }, { "zone": "G. Security, alarm and CCTV", "ref": "G6", "text": "Visitor / access log", "risk": "Accountability", "crit": false }, { "zone": "G. Security, alarm and CCTV", "ref": "G7", "text": "Past theft or vandalism incidents and actions taken", "risk": "Repeat loss", "crit": false }, { "zone": "H. Documentation on site", "ref": "H1", "text": "Technician logbook: dates and frequency vs plan", "risk": "Whether maintenance actually occurred", "crit": false }, { "zone": "H. Documentation on site", "ref": "H2", "text": "Maintenance tags on equipment with dates", "risk": "Evidence of cleaning and service", "crit": false }, { "zone": "H. Documentation on site", "ref": "H3", "text": "Site permit, lease and landowner agreement", "risk": "Compliance and legal", "crit": false }, { "zone": "H. Documentation on site", "ref": "H4", "text": "Insurance and structural inspection certificates", "risk": "Compliance", "crit": false }, { "zone": "H. Documentation on site", "ref": "H5", "text": "Emergency contact list", "risk": "Incident response", "crit": false }];
+        const SITES = [
+            { id: "NS_001", name: "In Style"}, 
+            { id: "NS_002", name: "August Pine Ridge"}, 
+            { id:"NS_003", name: "San Felipe"}, 
+            { id:"NS_004", name: "Blue Creek"}, 
+            { id:"NS_005", name: "San Lazaro"}, 
+            { id:"NS_006", name: "Yo Creek"}, 
+            { id:"NS_007", name: "OW Data Cente/Palmar"},
+            { id:"NS_008", name: "Gallon Jug"}, 
+            { id:"NS_009", name: "Gallon Jug(Chan Chich)"},
+            { id:"NS_010", name: "Tres Leguas"}, 
+            { id:"NS_011", name: "Rhaburn Ridge"},
+            { id:"NS_012", name: "Carmelita"},
+            { id:"NS_013", name: "ML47/Carmelita"}, 
+            { id:"NS_014", name: "BSI Community"}, 
+            { id:"NS_015", name: "Guinea Grass"}, 
+            { id:"NS_016", name: "Crooked Tree Village"}, 
+            { id:"NS_017", name: "Crooked Tree ML 32"},
+            { id:"NS_018", name: "San Estevan"}, 
+            { id:"NS_019", name: "Sarteneja"}, 
+            { id:"NS_020", name: "Sarteneja Road"}, 
+            { id:"NS_021", name: "Chunox"}, 
+            { id:"NS_022", name: "Progresso"},
+            { id:"NS_023", name: "San Pablo"}, 
+            { id:"NS_024", name: "Caledonia"},
+            { id:"NS_025", name: "Libertad"},
+            { id:"NS_026", name: "San Narciso"}, 
+            { id:"NS_027", name: "San Pablo (Buena vista)"}, 
+            { id:"NS_028", name: "Xaibe"},
+            { id:"NS_029", name: "San Joaquin"},
+            { id:"NS_030", name: "Ranchito"},
+            { id:"NS_031", name: "Corozal Exchange"},
+            { id:"NS_032", name: "Patchakan"},
+            { id:"NS_033", name: "San Narciso (Yo Chen)"}, 
+            { id:"NS_034", name: "Finca_Solana"}, 
+            { id:"NS_035", name: "Corozal (Chan Chen)"},
+            { id:"NS_036", name: "Mirador"},
+            { id:"NS_037", name: "Santa Elena Hut"},
+            { id:"NS_038", name: "Santa Elene Nassa"},
+            { id:"NS_039", name: "Consejo"}
+        ]; 
+        const KEY = "towerAuditDraft_v1";
+        let S = { meta: {}, res: {} };
+        const $ = id => document.getElementById(id);
+        function save() { 
+            try { 
+                localStorage.setItem(KEY, JSON.stringify(S)) 
+            } 
+            catch (e) { 
+            } 
+        }
+        function load() {
+            try {
+                const d = localStorage.getItem(KEY); if (d) S = JSON.parse(d)
+            } catch (e) {
+                }
+            }
+        function meta() {
+            S.meta = { siteId: $("siteId").value, 
+            region: $("region").value, 
+            vdate: $("vdate").value, 
+            auditor: $("auditor").value, 
+            overall: $("overall").value 
+            }; 
+            save() 
+        }
+        function fillMeta(keepAuditor) {
+            const m = S.meta || {}; 
+                $("siteId").value = m.siteId || "";
+                $("region").value = m.region || "Northern";
+                $("vdate").value = m.vdate || new Date().toISOString().slice(0, 10);
+                $("auditor").value = m.auditor || "";
+                $("overall").value = m.overall || "" 
+        }
+        function build() {
+           $("siteId").innerHTML = '<option value="">-- Select Site --</option>'; 
+           SITES.forEach(
+                        site => {const o = document.createElement("option"); 
+                        o.value = `${site.id} - ${site.name}`; 
+                        o.textContent = `${site.id} - ${site.name}`; 
+                        $("siteId").appendChild(o);}
+                    );
+            const zones = [...new Set(CHECKS.map(c => c.zone))];
+                $("zones").innerHTML = "";
+            zones.forEach((z, zi) => {
+                const items = CHECKS.filter(c => c.zone === z);
+                const d = document.createElement("details"); if (zi === 0) d.open = true;
+                    d.innerHTML = `<summary>${z}<span id="zc${zi}"></span></summary>`;
+                items.forEach(c => {
+                    const r = S.res[c.ref] || {};
+                    const div = document.createElement("div"); 
+                    div.className = "chk"; 
+                    div.id = "c_" + c.ref;
+                    div.innerHTML = `<div class="ct"><b>${c.ref}</b> ${c.text}${c.crit ? '<span class="badge">CRITICAL</span>' : ''}</div><div class="rk">Risk: ${c.risk}</div>
+                        <div class="seg">${["Pass", "Fail", "N/A"].map(v => `<button class="${v.replace("/", "")}" data-r="${c.ref}" data-v="${v}">${v}</button>`).join("")}</div>
+                        <div class="notes"><input type="text" placeholder="Comment" data-r="${c.ref}" data-f="c" value="${(r.c || "").replace(/"/g, "&quot;")}"></div>`;
+                    d.appendChild(div);
+                });
+                $("zones").appendChild(d);
+            });
+            document.querySelectorAll(".seg button").forEach(b => b.onclick = () => { const r = b.dataset.r; S.res[r] = S.res[r] || {}; S.res[r].v = (S.res[r].v === b.dataset.v) ? "" : b.dataset.v; save(); paint() });
+            document.querySelectorAll(".notes input").forEach(i => i.oninput = () => { const r = i.dataset.r; S.res[r] = S.res[r] || {}; S.res[r][i.dataset.f] = i.value; save() });
+            ["siteId", "region", "vdate", "auditor", "overall"].forEach(id => $(id).oninput = meta);
+            paint();
+        }
+        function paint() {
+            let done = 0;
+            CHECKS.forEach(c => {
+                const v = (S.res[c.ref] || {}).v || "";
+                if (v) done++;
+                const el = $("c_" + c.ref);
+                // Highlight unanswered questions
+                if (!v) {
+                    el.style.border = "2px solid orange";
+                }else if (v !== "Fail") {
+                    el.style.border = "1px solid var(--bd)"; 
+                }
+                else {
+                    el.style.border = "";
+                }
+                // Highlight failures
+                el.classList.toggle("fail", v === "Fail");
+                // Expand section containing failures
+                if (v === "Fail") {
+                    const details = el.closest("details");
+                    if (details) details.open = true;
+                }
+                // Highlight selected button
+                el.querySelectorAll(".seg button").forEach(b =>
+                    b.classList.toggle("on", b.dataset.v === v)
+                );
+            });
+            const zones = [...new Set(CHECKS.map(c => c.zone))];
+            zones.forEach((z, zi) => { const it = CHECKS.filter(c => c.zone === z); const n = it.filter(c => (S.res[c.ref] || {}).v).length; $("zc" + zi).textContent = n + "/" + it.length });
+            $("bar").style.width = (100 * done / CHECKS.length) + "%";
+            $("prog").textContent = done + " of " + CHECKS.length + " checks answered";
+            if (v === "Fail") { el.closest("details").open = true;}
+        }
+        function q(v) { 
+            let s = String(v == null ? "" : v).replace(/[\r\n]+/g, " "); 
+            return /[",]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s 
+        }
+        function dl(name, text) { 
+            const a = document.createElement("a"); 
+            a.href = URL.createObjectURL(new Blob(["\uFEFF" + text], 
+            { type: "text/csv;charset=utf-8" })); 
+            a.download = name; document.body.appendChild(a); a.click(); a.remove() 
+        }
+        function exportCsv() {
+            meta(); const m = S.meta;
+            if (!m.siteId.trim()) {alert("Please select a site."); return;}
+            const un = CHECKS.filter(c => !(S.res[c.ref] || {}).v).length;
+            const fails = CHECKS.filter(c => (S.res[c.ref] || {}).v === "Fail");  
+            if (un > 0) {
+                alert(
+                    "Please complete all checks before exporting.\n\n" +
+                    un + " check(s) are still unanswered."
+                );
+                return;
+            }
+            const heads = ["Site ID", "Region", "Visit Date", "Auditor", ...CHECKS.map(c => c.ref), "Comments", "Overall Notes"];
+            const com = CHECKS.filter(c => (S.res[c.ref] || {}).c).map(c => c.ref + ": " + S.res[c.ref].c).join(" | ");
+            const row = [m.siteId.trim(), m.region, m.vdate, m.auditor, ...CHECKS.map(c => (S.res[c.ref] || {}).v || ""), com, m.overall];
+            const fn = m.siteId.trim().replace(/[^\w-]+/g, "_") + "_" + m.vdate + ".csv";
+            dl(fn, heads.map(q).join(",") + "\r\n" + row.map(q).join(",") + "\r\n");
+            $("msg").textContent = "Exported " + fn + ". Send this file to the audit lead, then tap New site.";
+        }
+        function newSite() {
+            if (!confirm("Clear the form for a new site? Export first if you have not.")) return; 
+            const a = $("auditor").value, r = $("region").value; 
+            S = { meta: { auditor: a, region: r }, res: {} }; 
+            save(); 
+            fillMeta(); 
+            build(); $("msg").textContent = ""; 
+            window.scrollTo(0, 0) 
+        }
+        function tab(n) { 
+            $("p1").style.display = n === 1 ? "" : "none"; 
+            $("p2").style.display = n === 2 ? "" : "none"; 
+            $("act1").style.display = n === 1 ? "" : "none"; 
+            $("t1").className = n === 1 ? "on" : ""; 
+            $("t2").className = n === 2 ? "on" : "" 
+        }
+        load(); fillMeta(); build();
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("./service-worker.js")
+                .then(() => console.log("Service Worker registered"));
+        }
+    </script>
+</body>
+
+</html>
