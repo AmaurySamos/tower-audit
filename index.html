@@ -366,6 +366,12 @@
                     follow PPE requirements. Tap Pass, Fail or N/A for each check. For every Fail, add a photo reference
                     and a short comment. Progress saves automatically on this device.</p>
             </div>
+            
+            <div id="auditScopeInfo" class="card" style="margin-top:8px;">
+                <b>Assigned Audit Sections</b>
+                <div id="scopeText" class="note"></div>
+                <!-- <div id="scopeText"></div> -->
+            </div>
             <div id="zones"></div>
             <div class="card">
                 <label>Overall notes for this site</label>
@@ -500,7 +506,72 @@
                 $("vdate").value = m.vdate || new Date().toISOString().slice(0, 10);
                 $("auditor").value = m.auditor || "";
                 $("overall").value = m.overall || "" 
+
+                $("auditor").addEventListener("change", () => {
+
+                    meta();
+
+                    applyAuditorSections();
+
+                });
         }
+        function applyAuditorSections() {
+
+            const auditor =
+                $("auditor").value;
+
+            document
+            .querySelectorAll("#zones details")
+            .forEach(section => {
+
+                const title =
+                    section.querySelector("summary")
+                        .textContent;
+
+                let show = true;
+
+                if (auditor === "Amaury Samos") {
+
+                    show =
+                        title.startsWith("A.") ||
+                        title.startsWith("B.") ||
+                        title.startsWith("C.") ||
+                        title.startsWith("D.");
+                }
+
+                if (auditor === "Lupita Blanco") {
+
+                    show =
+                        title.startsWith("E.") ||
+                        title.startsWith("F.") ||
+                        title.startsWith("G.") ||
+                        title.startsWith("H.");
+                }
+
+                section.style.display =
+                    show ? "" : "none";
+            });
+        }
+        function updateAuditScope() {
+
+            const auditor = $("auditor").value;
+
+            const scopeText = $("scopeText");
+
+            if (!scopeText) return;
+
+            if (auditor === "Amaury Samos") {
+
+                scopeText.innerHTML =
+                    "<b>Assigned Sections:</b> A-D (Access, Tower, Shelter, Interior)";
+
+            } else {
+
+                scopeText.innerHTML =
+                    "<b>Assigned Sections:</b> E-H (Power, Grounding, Security, Documentation)";
+            }
+        }
+
         function build() {
            $("siteId").innerHTML = '<option value="">-- Select Site --</option>'; 
            SITES.forEach(
@@ -513,7 +584,7 @@
                 $("zones").innerHTML = "";
             zones.forEach((z, zi) => {
                 const items = CHECKS.filter(c => c.zone === z);
-                const d = document.createElement("details"); if (zi === 0) d.open = true;
+                const d = document.createElement("details"); 
                     d.innerHTML = `<summary>${z}<span id="zc${zi}"></span></summary>`;
                 items.forEach(c => {
                     const r = S.res[c.ref] || {};
@@ -530,7 +601,15 @@
             document.querySelectorAll(".seg button").forEach(b => b.onclick = () => { const r = b.dataset.r; S.res[r] = S.res[r] || {}; S.res[r].v = (S.res[r].v === b.dataset.v) ? "" : b.dataset.v; save(); paint() });
             document.querySelectorAll(".notes input").forEach(i => i.oninput = () => { const r = i.dataset.r; S.res[r] = S.res[r] || {}; S.res[r][i.dataset.f] = i.value; save() });
             ["siteId", "region", "vdate", "auditor", "overall"].forEach(id => $(id).oninput = meta);
+            
+            $("auditor").addEventListener("change", () => {
+                updateAuditScope();
+                applyAuditorSections();
+            });
+            
             paint();
+            applyAuditorSections();
+            updateAuditScope();
         }
         function paint() {
             let done = 0;
@@ -577,7 +656,15 @@
         function exportCsv() {
             meta(); const m = S.meta;
             if (!m.siteId.trim()) {alert("Please select a site."); return;}
-            const un = CHECKS.filter(c => !(S.res[c.ref] || {}).v).length;
+            
+            const applicableChecks = CHECKS.filter(c => {
+                    const z = c.zone.charAt(0);
+                    if (portion === "ABCD")
+                        return ["A","B","C","D"].includes(z);
+                    return ["E","F","G","H"].includes(z);
+                });
+            const un = applicableChecks.filter(c => !(S.res[c.ref] || {}).v).length;
+
             const fails = CHECKS.filter(c => (S.res[c.ref] || {}).v === "Fail");  
             if (un > 0) {
                 alert(
@@ -613,7 +700,7 @@
                 submissionId: (crypto.randomUUID ? crypto.randomUUID() : Date.now() + "-" + Math.random().toString(36).slice(2)),
                 submittedAt: new Date().toISOString(),
                 siteId: i > -1 ? full.slice(0, i) : full,
-                siteName: i > -1 ? full.slice(i + 3) : "",
+                // siteName: i > -1 ? full.slice(i + 3) : "",
                 region: m.region, vdate: m.vdate, auditor: m.auditor,
                 checks, comments, overall: m.overall || ""
             };
