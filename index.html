@@ -673,7 +673,7 @@
                 submissionId: (crypto.randomUUID ? crypto.randomUUID() : Date.now() + "-" + Math.random().toString(36).slice(2)),
                 submittedAt: new Date().toISOString(),
                 siteId: i > -1 ? full.slice(0, i) : full,
-                // siteName: i > -1 ? full.slice(i + 3) : "",
+                siteName: i > -1 ? full.slice(i + 3) : "",
                 region: m.region, vdate: m.vdate, auditor: m.auditor,
                 checks, comments, overall: m.overall || ""
             };
