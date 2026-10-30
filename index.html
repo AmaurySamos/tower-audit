@@ -375,8 +375,8 @@
     </main>
     <div class="act" id="act1">
         <button class="sec" onclick="newSite()">New site</button>
-        <button class="sec" onclick="exportCsv()">Export CSV</button>
-        <button onclick="submitSite()">Submit site</button>
+        <button class="sec" onclick="exportCsv()">Download CSV</button>
+        <button onclick="submitSite()">Upload site</button>
     </div>
     <div style="text-align:center;font-size:13px;padding:0 12px" id="msg"></div>
     <script>
@@ -583,8 +583,8 @@
         }
         function showQ(justSent) {
             const n = getQ().length, el = $("msg");
-            if (n) el.textContent = n + " site(s) waiting to upload. They will send automatically when you have signal.";
-            else if (justSent) el.textContent = "Uploaded to the master sheet. You can tap New site.";
+            if (n) { el.textContent = ""; alert(n + " site(s) waiting to upload.\n\nThey will send automatically when you have signal. Keep the app on this device until it confirms the upload."); }
+            else if (justSent) { el.textContent = ""; alert("Uploaded to the master sheet.\n\nYou can tap New site."); }
         }
         function submitSite() {
             meta(); const m = S.meta;
