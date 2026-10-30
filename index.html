@@ -375,8 +375,8 @@
     </main>
     <div class="act" id="act1">
         <button class="sec" onclick="newSite()">New site</button>
-        <button
-            onclick="exportCsv()">Export site file</button>
+        <button class="sec" onclick="exportCsv()">Export CSV</button>
+        <button onclick="submitSite()">Submit site</button>
     </div>
     <div style="text-align:center;font-size:13px;padding:0 12px" id="msg"></div>
     <script>
@@ -547,6 +547,55 @@
             dl(fn, heads.map(q).join(",") + "\r\n" + row.map(q).join(",") + "\r\n");
             $("msg").textContent = "Exported " + fn + ". Send this file to the audit lead, then tap New site.";
         }
+
+        // ===== Central submission (Google Sheet via Apps Script) =====
+        const ENDPOINT = "https://script.google.com/macros/s/AKfycbz9aSHGNX1Rj2NBK9BnksAbWzA4ZygpcspQS4WePQXnBQAbC7pm6Vrh6ebzYievjB0RUg/exec";
+        const TOKEN = "iatower2026auditlbasnorth";
+        const QKEY = "towerAuditQueue_v1";
+        const getQ = () => { try { return JSON.parse(localStorage.getItem(QKEY) || "[]") } catch (e) { return [] } };
+        const setQ = a => { try { localStorage.setItem(QKEY, JSON.stringify(a)) } catch (e) { } };
+        function buildRecord() {
+            const m = S.meta;
+            const full = m.siteId.trim(), i = full.indexOf(" - ");
+            const checks = {}; CHECKS.forEach(c => checks[c.ref] = (S.res[c.ref] || {}).v || "");
+            const comments = CHECKS.filter(c => (S.res[c.ref] || {}).c).map(c => c.ref + ": " + S.res[c.ref].c).join(" | ");
+            return {
+                token: TOKEN,
+                submissionId: (crypto.randomUUID ? crypto.randomUUID() : Date.now() + "-" + Math.random().toString(36).slice(2)),
+                submittedAt: new Date().toISOString(),
+                siteId: i > -1 ? full.slice(0, i) : full,
+                siteName: i > -1 ? full.slice(i + 3) : "",
+                region: m.region, vdate: m.vdate, auditor: m.auditor,
+                checks, comments, overall: m.overall || ""
+            };
+        }
+        async function flushQueue() {
+            let q = getQ(); if (!q.length || !navigator.onLine) return showQ();
+            const left = [];
+            for (const rec of q) {
+                try {
+                    const r = await fetch(ENDPOINT, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(rec) });
+                    const j = await r.json();
+                    if (!j.ok) left.push(rec);
+                } catch (e) { left.push(rec) }
+            }
+            setQ(left); showQ(left.length < q.length);
+        }
+        function showQ(justSent) {
+            const n = getQ().length, el = $("msg");
+            if (n) el.textContent = n + " site(s) waiting to upload. They will send automatically when you have signal.";
+            else if (justSent) el.textContent = "Uploaded to the master sheet. You can tap New site.";
+        }
+        function submitSite() {
+            meta(); const m = S.meta;
+            if (!m.siteId.trim()) { alert("Please select a site."); return; }
+            const un = CHECKS.filter(c => !(S.res[c.ref] || {}).v).length;
+            if (un > 0) { alert("Please complete all checks before submitting.\n\n" + un + " check(s) are still unanswered."); return; }
+            const q = getQ(); q.push(buildRecord()); setQ(q);
+            $("msg").textContent = "Saved. Uploading...";
+            flushQueue();
+        }
+        window.addEventListener("online", flushQueue);
         function newSite() {
             if (!confirm("Clear the form for a new site? Export first if you have not.")) return; 
             const a = $("auditor").value, r = $("region").value; 
@@ -563,7 +612,7 @@
             $("t1").className = n === 1 ? "on" : ""; 
             $("t2").className = n === 2 ? "on" : "" 
         }
-        load(); fillMeta(); build();
+        load(); fillMeta(); build(); flushQueue();
         if ("serviceWorker" in navigator) {
             navigator.serviceWorker.register("./service-worker.js")
                 .then(() => console.log("Service Worker registered"));
