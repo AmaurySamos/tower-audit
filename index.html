@@ -725,8 +725,18 @@
         function submitSite() {
             meta(); const m = S.meta;
             if (!m.siteId.trim()) { alert("Please select a site."); return; }
-            const un = CHECKS.filter(c => !(S.res[c.ref] || {}).v).length;
-            if (un > 0) { alert("Please complete all checks before submitting.\n\n" + un + " check(s) are still unanswered."); return; }
+            const auditor = $("auditor").value;
+            const applicableChecks = CHECKS.filter(c => {
+                const zone = c.zone.charAt(0);
+                if (auditor === "Amaury Samos") {return ["A", "B", "C", "D"].includes(zone);}
+                if (auditor === "Lupita Blanco") {return ["E", "F", "G", "H"].includes(zone);}
+                return true;
+            });
+            const un = applicableChecks.filter(c => !(S.res[c.ref] || {}).v).length;
+            if (un > 0) {
+                alert("Please complete all assigned sections before submitting.\n\n" + un + " check(s) are still unanswered.");
+                return;
+            }
             const q = getQ(); q.push(buildRecord()); setQ(q);
             $("msg").textContent = "Saved. Uploading...";
             flushQueue();
