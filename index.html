@@ -605,8 +605,11 @@
             const full = m.siteId.trim(), i = full.indexOf(" - ");
             const checks = {}; CHECKS.forEach(c => checks[c.ref] = (S.res[c.ref] || {}).v || "");
             const comments = CHECKS.filter(c => (S.res[c.ref] || {}).c).map(c => c.ref + ": " + S.res[c.ref].c).join(" | ");
+            const auditKey =(i > -1 ? full.slice(0, i) : full) + "_" + m.vdate;
             return {
                 token: TOKEN,
+                auditKey: auditKey,
+                contributor: m.auditor,
                 submissionId: (crypto.randomUUID ? crypto.randomUUID() : Date.now() + "-" + Math.random().toString(36).slice(2)),
                 submittedAt: new Date().toISOString(),
                 siteId: i > -1 ? full.slice(0, i) : full,
