@@ -506,72 +506,38 @@
                 $("vdate").value = m.vdate || new Date().toISOString().slice(0, 10);
                 $("auditor").value = m.auditor || "";
                 $("overall").value = m.overall || "" 
-
                 $("auditor").addEventListener("change", () => {
-
                     meta();
-
                     applyAuditorSections();
-
                 });
         }
         function applyAuditorSections() {
-
             const auditor =
                 $("auditor").value;
-
             document
             .querySelectorAll("#zones details")
             .forEach(section => {
-
-                const title =
-                    section.querySelector("summary")
-                        .textContent;
-
+                const title = section.querySelector("summary").textContent;
                 let show = true;
-
                 if (auditor === "Amaury Samos") {
-
-                    show =
-                        title.startsWith("A.") ||
-                        title.startsWith("B.") ||
-                        title.startsWith("C.") ||
-                        title.startsWith("D.");
+                    show = title.startsWith("A.") || title.startsWith("B.") || title.startsWith("C.") || title.startsWith("D.");
                 }
-
                 if (auditor === "Lupita Blanco") {
-
-                    show =
-                        title.startsWith("E.") ||
-                        title.startsWith("F.") ||
-                        title.startsWith("G.") ||
-                        title.startsWith("H.");
+                    show = title.startsWith("E.") || title.startsWith("F.") || title.startsWith("G.") || title.startsWith("H.");
                 }
-
                 section.style.display =
                     show ? "" : "none";
             });
         }
         function updateAuditScope() {
-
             const auditor = $("auditor").value;
-
             const scopeText = $("scopeText");
-
             if (!scopeText) return;
+            if (auditor === "Amaury Samos") { scopeText.innerHTML = "<b>Assigned Sections:</b> A-D (Access, Tower, Shelter, Interior)";
 
-            if (auditor === "Amaury Samos") {
-
-                scopeText.innerHTML =
-                    "<b>Assigned Sections:</b> A-D (Access, Tower, Shelter, Interior)";
-
-            } else {
-
-                scopeText.innerHTML =
-                    "<b>Assigned Sections:</b> E-H (Power, Grounding, Security, Documentation)";
+            } else {scopeText.innerHTML ="<b>Assigned Sections:</b> E-H (Power, Grounding, Security, Documentation)";
             }
         }
-
         function build() {
            $("siteId").innerHTML = '<option value="">-- Select Site --</option>'; 
            SITES.forEach(
@@ -600,13 +566,11 @@
             });
             document.querySelectorAll(".seg button").forEach(b => b.onclick = () => { const r = b.dataset.r; S.res[r] = S.res[r] || {}; S.res[r].v = (S.res[r].v === b.dataset.v) ? "" : b.dataset.v; save(); paint() });
             document.querySelectorAll(".notes input").forEach(i => i.oninput = () => { const r = i.dataset.r; S.res[r] = S.res[r] || {}; S.res[r][i.dataset.f] = i.value; save() });
-            ["siteId", "region", "vdate", "auditor", "overall"].forEach(id => $(id).oninput = meta);
-            
+            ["siteId", "region", "vdate", "auditor", "overall"].forEach(id => $(id).oninput = meta);  
             $("auditor").addEventListener("change", () => {
                 updateAuditScope();
                 applyAuditorSections();
             });
-            
             paint();
             applyAuditorSections();
             updateAuditScope();
@@ -615,16 +579,42 @@
             const auditor = $("auditor").value;
             const applicableChecks = CHECKS.filter(c => {
                 const zone = c.zone.charAt(0);
-                if (auditor === "Amaury Samos") { return ["A","B","C","D"].includes(zone); }
-
-                if (auditor === "Lupita Blanco") {return ["E","F","G","H"].includes(zone); }
+                if (auditor === "Amaury Samos") {return ["A","B","C","D"].includes(zone);}
+                if (auditor === "Lupita Blanco") {return ["E","F","G","H"].includes(zone);}
                 return true;
             });
             let done = 0;
+            applicableChecks.forEach(c => {
+                const v = (S.res[c.ref] || {}).v || "";
+                if (v) done++;
+            });
+            CHECKS.forEach(c => {
+                const v = (S.res[c.ref] || {}).v || "";
+                const el = $("c_" + c.ref);
+                if (!el) return;
+                if (!v) {el.style.border = "2px solid orange";
+                } else if (v !== "Fail") {el.style.border = "1px solid var(--bd)";
+                } else {el.style.border = "";
+                }
+                el.classList.toggle("fail", v === "Fail");
+                if (v === "Fail") {
+                    const details = el.closest("details");
+                    if (details) details.open = true;
+                }
+                el.querySelectorAll(".seg button").forEach(b =>
+                    b.classList.toggle("on", b.dataset.v === v)
+                );
+            });
             const zones = [...new Set(CHECKS.map(c => c.zone))];
-            zones.forEach((z, zi) => { const it = CHECKS.filter(c => c.zone === z); const n = it.filter(c => (S.res[c.ref] || {}).v).length; $("zc" + zi).textContent = n + "/" + it.length });
-            $("bar").style.width = (100 * done / applicableChecks.length) + "%";
-            $("prog").textContent = done + " of " + applicableChecks.length +" assigned checks answered";
+            zones.forEach((z, zi) => {
+                const it = CHECKS.filter(c => c.zone === z);
+                const n = it.filter(c => (S.res[c.ref] || {}).v).length;
+                $("zc" + zi).textContent =
+                    n + "/" + it.length;
+            });
+
+            $("bar").style.width =(100 * done / applicableChecks.length) + "%";
+            $("prog").textContent =done + " of " + applicableChecks.length + " assigned checks answered";
         }
         function q(v) { 
             let s = String(v == null ? "" : v).replace(/[\r\n]+/g, " "); 
