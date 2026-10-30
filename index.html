@@ -612,36 +612,19 @@
             updateAuditScope();
         }
         function paint() {
-            let done = 0;
-            CHECKS.forEach(c => {
-                const v = (S.res[c.ref] || {}).v || "";
-                if (v) done++;
-                const el = $("c_" + c.ref);
-                // Highlight unanswered questions
-                if (!v) {
-                    el.style.border = "2px solid orange";
-                }else if (v !== "Fail") {
-                    el.style.border = "1px solid var(--bd)"; 
-                }
-                else {
-                    el.style.border = "";
-                }
-                // Highlight failures
-                el.classList.toggle("fail", v === "Fail");
-                // Expand section containing failures
-                if (v === "Fail") {
-                    const details = el.closest("details");
-                    if (details) details.open = true;
-                }
-                // Highlight selected button
-                el.querySelectorAll(".seg button").forEach(b =>
-                    b.classList.toggle("on", b.dataset.v === v)
-                );
+            const auditor = $("auditor").value;
+            const applicableChecks = CHECKS.filter(c => {
+                const zone = c.zone.charAt(0);
+                if (auditor === "Amaury Samos") { return ["A","B","C","D"].includes(zone); }
+
+                if (auditor === "Lupita Blanco") {return ["E","F","G","H"].includes(zone); }
+                return true;
             });
+            let done = 0;
             const zones = [...new Set(CHECKS.map(c => c.zone))];
             zones.forEach((z, zi) => { const it = CHECKS.filter(c => c.zone === z); const n = it.filter(c => (S.res[c.ref] || {}).v).length; $("zc" + zi).textContent = n + "/" + it.length });
-            $("bar").style.width = (100 * done / CHECKS.length) + "%";
-            $("prog").textContent = done + " of " + CHECKS.length + " checks answered";
+            $("bar").style.width = (100 * done / applicableChecks.length) + "%";
+            $("prog").textContent = done + " of " + applicableChecks.length +" assigned checks answered";
         }
         function q(v) { 
             let s = String(v == null ? "" : v).replace(/[\r\n]+/g, " "); 
