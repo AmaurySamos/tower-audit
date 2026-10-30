@@ -710,7 +710,9 @@
                 alert("Please complete all assigned sections before submitting.\n\n" + un + " check(s) are still unanswered.");
                 return;
             }
-            const q = getQ(); q.push(buildRecord()); setQ(q);
+            const q = getQ(); 
+            console.log(buildRecord());
+            q.push(buildRecord()); setQ(q);
             $("msg").textContent = "Saved. Uploading...";
             flushQueue();
         }
