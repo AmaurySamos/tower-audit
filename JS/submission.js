@@ -76,6 +76,9 @@ function submitSite() {
     if (auditor === "Lupita Blanco") {
       return ["E", "F", "G", "H"].includes(zone);
     }
+    if (auditor === "David Guerra") {
+      return ["A", "B", "C", "D", "E", "F", "G", "H"].includes(zone);
+    }
     return true;
   });
   const un = applicableChecks.filter((c) => !(S.res[c.ref] || {}).v).length;

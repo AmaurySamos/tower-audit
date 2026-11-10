@@ -39,6 +39,17 @@ function applyAuditorSections() {
         title.startsWith("G.") ||
         title.startsWith("H.");
     }
+    if (auditor === "David Guerra") {
+      show =
+        title.startsWith("A.") ||
+        title.startsWith("B.") ||
+        title.startsWith("C.") ||
+        title.startsWith("D.") ||
+        title.startsWith("E.") ||
+        title.startsWith("F.") ||
+        title.startsWith("G.") ||
+        title.startsWith("H.");
+    }
     section.style.display = show ? "" : "none";
   });
 }
@@ -49,9 +60,12 @@ function updateAuditScope() {
   if (auditor === "Amaury Samos") {
     scopeText.innerHTML =
       "<b>Assigned Sections:</b> A-D (Access, Tower, Shelter, Interior)";
-  } else {
+  } else if (auditor === "Lupita Blanco") {
     scopeText.innerHTML =
       "<b>Assigned Sections:</b> E-H (Power, Grounding, Security, Documentation)";
+  } else {
+    scopeText.innerHTML =
+      "<b>Assigned Sections:</b> A-H (Access, Tower, Shelter, Interior, Power, Grounding, Security, Documentation)";
   }
 }
 function build() {
@@ -119,6 +133,9 @@ function paint() {
     }
     if (auditor === "Lupita Blanco") {
       return ["E", "F", "G", "H"].includes(zone);
+    }
+    if (auditor === "David Guerra") {
+      return ["A", "B", "C", "D", "E", "F", "G", "H"].includes(zone);
     }
     return true;
   });
